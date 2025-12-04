@@ -14,9 +14,15 @@ const AttendanceList = () => {
 
   const fetchAttendance = async () => {
     try {
-      const data = await attendanceService.getMyAttendance();
+      const response = await attendanceService.getMyAttendance();
+      console.log('Fetched attendance response:', response);
+      
+      // Handle both paginated and direct array responses
+      const data = Array.isArray(response) ? response : (response.results || []);
+      
       setAttendance(data);
     } catch (err) {
+      console.error('Failed to load attendance:', err);
       setError('Failed to load attendance');
     } finally {
       setLoading(false);
@@ -42,13 +48,13 @@ const AttendanceList = () => {
           </thead>
           <tbody>
             {attendance.map((record) => (
-              <tr key={record._id}>
+              <tr key={record.id}>
                 <td>{formatDate(record.date)}</td>
-                <td>{record.checkIn || 'N/A'}</td>
-                <td>{record.checkOut || 'N/A'}</td>
+                <td>{record.check_in_time ? new Date(record.check_in_time).toLocaleTimeString() : 'N/A'}</td>
+                <td>{record.check_out_time ? new Date(record.check_out_time).toLocaleTimeString() : 'N/A'}</td>
                 <td>
-                  <span className={`status-badge status-${record.status.toLowerCase()}`}>
-                    {record.status}
+                  <span className={`status-badge status-${(record.status || 'present').toLowerCase()}`}>
+                    {record.status || 'Present'}
                   </span>
                 </td>
               </tr>

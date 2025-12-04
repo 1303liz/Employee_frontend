@@ -4,30 +4,36 @@ import { useAuth } from '../hooks/useAuth';
 
 const Sidebar = () => {
   const { user } = useAuth();
+  const isHR = user?.role === 'HR';
 
   return (
     <aside className="sidebar">
       <nav className="sidebar-nav">
         <ul>
           <li>
-            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/dashboard">📊 Dashboard</Link>
           </li>
           <li>
-            <Link to="/employees">Employees</Link>
+            <Link to="/employees">👥 Employees</Link>
           </li>
           <li>
-            <Link to="/leaves">Leaves</Link>
+            <Link to="/leaves">🏖️ {isHR ? 'All Leaves' : 'My Leaves'}</Link>
           </li>
           <li>
-            <Link to="/attendance">Attendance</Link>
+            <Link to="/attendance">📅 Attendance</Link>
           </li>
-          {user?.role === 'HR' && (
+          {isHR && (
             <>
-              <li>
-                <Link to="/employees/add">Add Employee</Link>
+              <li style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #eee' }}>
+                <span style={{ fontSize: '12px', color: '#666', padding: '0 15px', fontWeight: 'bold' }}>
+                  HR MANAGEMENT
+                </span>
               </li>
               <li>
-                <Link to="/leaves/manage">Manage Leaves</Link>
+                <Link to="/employees/add">➕ Add Employee</Link>
+              </li>
+              <li>
+                <Link to="/leaves/manage">✅ Manage Leaves</Link>
               </li>
             </>
           )}

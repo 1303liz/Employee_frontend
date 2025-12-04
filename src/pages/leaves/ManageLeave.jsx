@@ -14,9 +14,15 @@ const ManageLeave = () => {
 
   const fetchAllLeaves = async () => {
     try {
-      const data = await leaveService.getAllLeaves();
+      const response = await leaveService.getAllLeaves();
+      console.log('Fetched all leaves:', response);
+      
+      // Handle both paginated and direct array responses
+      const data = Array.isArray(response) ? response : (response.results || []);
+      
       setLeaves(data);
     } catch (err) {
+      console.error('Failed to load leaves:', err);
       setError('Failed to load leaves');
     } finally {
       setLoading(false);
@@ -26,8 +32,10 @@ const ManageLeave = () => {
   const handleStatusUpdate = async (leaveId, status) => {
     try {
       await leaveService.updateLeaveStatus(leaveId, status);
+      setError('');
       fetchAllLeaves(); // Refresh the list
     } catch (err) {
+      console.error('Failed to update leave status:', err);
       setError('Failed to update leave status');
     }
   };
@@ -53,43 +61,58 @@ const ManageLeave = () => {
             </tr>
           </thead>
           <tbody>
-            {leaves.map((leave) => (
-              <tr key={leave._id}>
-                <td>{leave.employeeId?.name || 'N/A'}</td>
-                <td>{leave.leaveType}</td>
-                <td>{formatDate(leave.startDate)}</td>
-                <td>{formatDate(leave.endDate)}</td>
-                <td>{leave.reason}</td>
-                <td>
-                  <span className={`status-badge status-${leave.status.toLowerCase()}`}>
-                    {leave.status}
-                  </span>
-                </td>
-                <td>
-                  {leave.status === 'Pending' && (
-                    <div className="action-buttons">
-                      <button
-                        className="btn btn-success btn-sm"
-                        onClick={() => handleStatusUpdate(leave._id, 'Approved')}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => handleStatusUpdate(leave._id, 'Rejected')}
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  )}
+            {leaves.length > 0 ? (
+              leaves.map((leave) => (
+                <tr key={leave.id}>
+                  <td>
+                    {leave.employee?.first_name && leave.employee?.last_name
+                      ? `${leave.employee.first_name} ${leave.employee.last_name}`
+                      : leave.employee?.username || 'N/A'}
+                  </td>
+                  <td>{leave.leave_type?.name || leave.leave_type || 'N/A'}</td>
+                  <td>{formatDate(leave.start_date)}</td>
+                  <td>{formatDate(leave.end_date)}</td>
+                  <td>{leave.reason || 'No reason provided'}</td>
+                  <td>
+                    <span className={`status-badge status-${leave.status.toLowerCase()}`}>
+                      {leave.status}
+                    </span>
+                  </td>
+                  <td>
+                    {leave.status === 'PENDING' && (
+                      <div className="table-actions">
+                        <button
+                          className="btn btn-success btn-sm"
+                          onClick={() => handleStatusUpdate(leave.id, 'APPROVED')}
+                        >
+                          Approve
+                        </button>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleStatusUpdate(leave.id, 'REJECTED')}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    )}
+                    {leave.status !== 'PENDING' && (
+                      <span style={{ color: 'var(--gray-text)', fontSize: '0.875rem' }}>
+                        {leave.status === 'APPROVED' ? 'Approved' : 'Rejected'}
+                      </span>
+                    )}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-text)' }}>
+                  No leave requests found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
-
-      {leaves.length === 0 && <p className="no-data">No leave requests found.</p>}
     </div>
   );
 };

@@ -14,9 +14,15 @@ const LeaveList = () => {
 
   const fetchLeaves = async () => {
     try {
-      const data = await leaveService.getMyLeaves();
+      const response = await leaveService.getMyLeaves();
+      console.log('Fetched leaves response:', response);
+      
+      // Handle both paginated and direct array responses
+      const data = Array.isArray(response) ? response : (response.results || []);
+      
       setLeaves(data);
     } catch (err) {
+      console.error('Failed to load leaves:', err);
       setError('Failed to load leaves');
     } finally {
       setLoading(false);
@@ -43,10 +49,10 @@ const LeaveList = () => {
           </thead>
           <tbody>
             {leaves.map((leave) => (
-              <tr key={leave._id}>
-                <td>{leave.leaveType}</td>
-                <td>{formatDate(leave.startDate)}</td>
-                <td>{formatDate(leave.endDate)}</td>
+              <tr key={leave.id}>
+                <td>{leave.leave_type?.name || leave.leave_type || 'N/A'}</td>
+                <td>{formatDate(leave.start_date)}</td>
+                <td>{formatDate(leave.end_date)}</td>
                 <td>{leave.reason}</td>
                 <td>
                   <span className={`status-badge status-${leave.status.toLowerCase()}`}>

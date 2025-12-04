@@ -4,10 +4,10 @@ import { useAuth } from '../../hooks/useAuth';
 import authService from '../../services/authService';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { updateUser } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -19,12 +19,43 @@ const Login = () => {
     setError('');
     setLoading(true);
 
+    console.log('Login attempt with:', { username: formData.username, password: '***' });
+
     try {
       const response = await authService.login(formData);
-      login(response.token, response.user);
+      console.log('Login response:', response);
+      // Update user state in context - authService.login already stored tokens
+      updateUser(response.user);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      console.error('Login error:', err);
+      console.error('Error response:', err.response);
+      console.error('Error data:', err.response?.data);
+      
+      if (err.code === 'ERR_NETWORK') {
+        setError('Cannot connect to server. Please ensure the backend is running.');
+      } else if (err.response?.data) {
+        const errorData = err.response.data;
+        
+        // Handle different error formats
+        if (typeof errorData === 'string') {
+          setError(errorData);
+        } else if (errorData.non_field_errors) {
+          setError(Array.isArray(errorData.non_field_errors) 
+            ? errorData.non_field_errors.join('. ') 
+            : errorData.non_field_errors);
+        } else {
+          const errorMessages = Object.entries(errorData)
+            .map(([key, value]) => {
+              const message = Array.isArray(value) ? value.join(', ') : value;
+              return `${key}: ${message}`;
+            })
+            .join('. ');
+          setError(errorMessages || 'Login failed. Please try again.');
+        }
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -54,18 +85,18 @@ const Login = () => {
         
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="email">
+            <label htmlFor="username">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
-              Email Address
+              Username
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your email"
-              value={formData.email}
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter your username"
+              value={formData.username}
               onChange={handleChange}
               required
             />

@@ -15,7 +15,31 @@ const MarkAttendance = () => {
       await attendanceService.checkIn();
       setSuccess('Check-in successful!');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to check in');
+      console.error('Check-in error:', err);
+      console.error('Error response:', err.response);
+      if (err.response?.data) {
+        const errorData = err.response.data;
+        console.error('Error data:', errorData);
+        if (typeof errorData === 'string') {
+          setError(errorData);
+        } else if (errorData.detail) {
+          setError(errorData.detail);
+        } else if (errorData.non_field_errors) {
+          setError(Array.isArray(errorData.non_field_errors) 
+            ? errorData.non_field_errors[0] 
+            : errorData.non_field_errors);
+        } else {
+          const errorMessages = Object.entries(errorData)
+            .map(([key, value]) => {
+              const message = Array.isArray(value) ? value.join(', ') : value;
+              return `${key}: ${message}`;
+            })
+            .join('. ');
+          setError(errorMessages || 'Failed to check in');
+        }
+      } else {
+        setError('Failed to check in. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -30,7 +54,31 @@ const MarkAttendance = () => {
       await attendanceService.checkOut();
       setSuccess('Check-out successful!');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to check out');
+      console.error('Check-out error:', err);
+      console.error('Error response:', err.response);
+      if (err.response?.data) {
+        const errorData = err.response.data;
+        console.error('Error data:', errorData);
+        if (typeof errorData === 'string') {
+          setError(errorData);
+        } else if (errorData.detail) {
+          setError(errorData.detail);
+        } else if (errorData.non_field_errors) {
+          setError(Array.isArray(errorData.non_field_errors) 
+            ? errorData.non_field_errors[0] 
+            : errorData.non_field_errors);
+        } else {
+          const errorMessages = Object.entries(errorData)
+            .map(([key, value]) => {
+              const message = Array.isArray(value) ? value.join(', ') : value;
+              return `${key}: ${message}`;
+            })
+            .join('. ');
+          setError(errorMessages || 'Failed to check out');
+        }
+      } else {
+        setError('Failed to check out. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
