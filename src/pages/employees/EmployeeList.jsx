@@ -10,6 +10,7 @@ const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -25,13 +26,31 @@ const EmployeeList = () => {
     try {
       const data = await employeeService.getAllEmployees();
       console.log('Employees data:', data);
-      setEmployees(data);
+      // Handle both array and paginated response formats
+      const employeesList = Array.isArray(data) ? data : (data?.results || data?.data || []);
+      setEmployees(employeesList);
     } catch (err) {
       console.error('Failed to fetch employees:', err);
       console.error('Error response:', err.response?.data);
       setError(err.response?.data?.detail || 'Failed to load employees');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteEmployee = async (employeeId) => {
+    try {
+      setError('');
+      setSuccess('');
+      await employeeService.deleteEmployee(employeeId);
+      setSuccess('Employee deleted successfully');
+      // Remove the deleted employee from the list
+      setEmployees(employees.filter(emp => emp.id !== employeeId));
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      console.error('Failed to delete employee:', err);
+      setError(err.response?.data?.detail || 'Failed to delete employee');
     }
   };
 
@@ -60,7 +79,8 @@ const EmployeeList = () => {
         )}
       </div>
 
-      {error && <div className="error-message">{error}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
       
       {user?.role !== 'HR' && !loading && (
         <div className="empty-state">
@@ -83,7 +103,11 @@ const EmployeeList = () => {
 
           <div className="employee-grid">
             {filteredEmployees.map((employee) => (
-              <EmployeeCard key={employee.id || employee.user?.id} employee={employee} />
+              <EmployeeCard 
+                key={employee.id || employee.user?.id} 
+                employee={employee}
+                onDelete={handleDeleteEmployee}
+              />
             ))}
           </div>
 

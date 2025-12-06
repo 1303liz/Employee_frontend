@@ -26,7 +26,13 @@ const Login = () => {
       console.log('Login response:', response);
       // Update user state in context - authService.login already stored tokens
       updateUser(response.user);
-      navigate('/dashboard');
+      
+      // Check if user must change password
+      if (response.user.must_change_password) {
+        navigate('/first-time-password-change');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       console.error('Login error:', err);
       console.error('Error response:', err.response);

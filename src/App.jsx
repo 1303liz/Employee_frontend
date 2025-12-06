@@ -5,6 +5,7 @@ import AppRoutes from './routes/AppRoutes';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
+import LeaveNotificationPopup from './components/LeaveNotificationPopup';
 import { useAuth } from './hooks/useAuth';
 import './index.css';
 
@@ -21,6 +22,7 @@ const AppLayout = () => {
         </main>
       </div>
       {user && <Footer />}
+      {user && user.role === 'EMPLOYEE' && <LeaveNotificationPopup />}
     </div>
   );
 };

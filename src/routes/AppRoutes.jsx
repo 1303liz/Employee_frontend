@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 // Auth pages
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
+import FirstTimePasswordChange from '../pages/auth/FirstTimePasswordChange';
 
 // Dashboard
 import Dashboard from '../pages/Dashboard';
@@ -22,6 +23,9 @@ import ManageLeave from '../pages/leaves/ManageLeave';
 // Attendance pages
 import AttendanceList from '../pages/attendance/AttendanceList';
 import MarkAttendance from '../pages/attendance/MarkAttendance';
+
+// Profile page
+import Profile from '../pages/profile/Profile';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -53,6 +57,14 @@ const AppRoutes = () => {
         element={user ? <Navigate to="/dashboard" replace /> : <Login />}
       />
       <Route path="/register" element={<Register />} />
+      <Route
+        path="/first-time-password-change"
+        element={
+          <ProtectedRoute>
+            <FirstTimePasswordChange />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Protected routes */}
       <Route
@@ -130,6 +142,16 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <MarkAttendance />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Profile route */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         }
       />

@@ -78,6 +78,21 @@ const authService = {
     }
   },
 
+  firstTimePasswordChange: async (passwordData) => {
+    try {
+      const response = await api.post('/first-time-password-change/', passwordData);
+      // Update user info to reflect password has been changed
+      const currentUser = authService.getCurrentUser();
+      if (currentUser) {
+        currentUser.must_change_password = false;
+        localStorage.setItem('user', JSON.stringify(currentUser));
+      }
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   getDashboard: async () => {
     try {
       const response = await api.get('/dashboard/');

@@ -149,6 +149,12 @@ const employeeService = {
     const response = await api.post('/employee-management/bulk-update/', bulkData);
     return response.data;
   },
+
+  // Resend credentials
+  resendEmployeeCredentials: async (employeeId) => {
+    const response = await api.post(`/employee-management/${employeeId}/resend-credentials/`);
+    return response.data;
+  },
 };
 
 export default employeeService;
