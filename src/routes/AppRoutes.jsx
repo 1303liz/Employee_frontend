@@ -27,6 +27,13 @@ import MarkAttendance from '../pages/attendance/MarkAttendance';
 // Profile page
 import Profile from '../pages/profile/Profile';
 
+// Messaging pages
+import Inbox from '../pages/messaging/Inbox';
+import ComposeMessage from '../pages/messaging/ComposeMessage';
+import MessageView from '../pages/messaging/MessageView';
+import SentMessages from '../pages/messaging/SentMessages';
+import ManageAnnouncements from '../pages/messaging/ManageAnnouncements';
+
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, loading } = useAuth();
@@ -152,6 +159,48 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Messaging routes */}
+      <Route
+        path="/messaging"
+        element={
+          <ProtectedRoute>
+            <Inbox />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/messaging/compose"
+        element={
+          <ProtectedRoute>
+            <ComposeMessage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/messaging/view/:id"
+        element={
+          <ProtectedRoute>
+            <MessageView />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/messaging/sent"
+        element={
+          <ProtectedRoute>
+            <SentMessages />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/messaging/announcements"
+        element={
+          <ProtectedRoute requiredRole="HR">
+            <ManageAnnouncements />
           </ProtectedRoute>
         }
       />

@@ -25,6 +25,9 @@ const Sidebar = () => {
           <li>
             <Link to="/attendance">📅 Attendance</Link>
           </li>
+          <li>
+            <Link to="/messaging">💬 Messages</Link>
+          </li>
           {isHR && (
             <>
               <li style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #eee' }}>
@@ -37,6 +40,9 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link to="/leaves/manage">✅ Manage Leaves</Link>
+              </li>
+              <li>
+                <Link to="/messaging/announcements">📢 Announcements</Link>
               </li>
             </>
           )}
