@@ -33,6 +33,7 @@ import ComposeMessage from '../pages/messaging/ComposeMessage';
 import MessageView from '../pages/messaging/MessageView';
 import SentMessages from '../pages/messaging/SentMessages';
 import ManageAnnouncements from '../pages/messaging/ManageAnnouncements';
+import Announcements from '../pages/messaging/Announcements';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -44,6 +45,12 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Force password change for users with temporary passwords
+  // Allow access only to first-time-password-change page
+  if (user.must_change_password && window.location.pathname !== '/first-time-password-change') {
+    return <Navigate to="/first-time-password-change" replace />;
   }
 
   if (requiredRole && user.role !== requiredRole) {
@@ -197,10 +204,18 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/messaging/announcements"
+        path="/messaging/announcements/manage"
         element={
           <ProtectedRoute requiredRole="HR">
             <ManageAnnouncements />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/messaging/announcements"
+        element={
+          <ProtectedRoute>
+            <Announcements />
           </ProtectedRoute>
         }
       />

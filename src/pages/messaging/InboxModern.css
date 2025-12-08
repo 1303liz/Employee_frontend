@@ -84,11 +84,52 @@
   letter-spacing: 0.5px;
 }
 
+/* Filter Bar */
+.inbox-filter-bar {
+  background: white;
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 3rem;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.inbox-filter-bar .filter-btn {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #ecf0f1;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #7f8c8d;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inbox-filter-bar .filter-btn:hover {
+  border-color: #3498db;
+  color: #3498db;
+  background: #f0f8ff;
+}
+
+.inbox-filter-bar .filter-btn.active {
+  background: #3498db;
+  color: white;
+  border-color: #3498db;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.inbox-filter-bar .filter-btn i {
+  font-size: 1rem;
+}
+
 /* Main Content */
 .inbox-main-content {
   display: grid;
   grid-template-columns: 400px 1fr;
-  height: calc(100vh - 220px);
+  height: calc(100vh - 290px);
   overflow: hidden;
 }
 
@@ -189,11 +230,13 @@
 
 /* Message Detail View */
 .inbox-message-detail {
-  background: #ffffff;
+  background: #ffffff !important;
   padding: 2rem 3rem;
   overflow-y: auto;
-  display: flex;
+  display: flex !important;
   flex-direction: column;
+  min-height: 100%;
+  color: #2c3e50;
 }
 
 .message-detail-header {
@@ -244,11 +287,16 @@
 }
 
 .message-detail-body {
-  color: #34495e;
+  color: #2c3e50 !important;
   line-height: 1.8;
   font-size: 0.95rem;
   margin-bottom: 2rem;
   flex: 1;
+  min-height: 100px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  padding: 10px 0;
+  background: transparent;
 }
 
 /* Reply Form */
@@ -309,6 +357,11 @@
   text-align: center;
   color: #95a5a6;
   font-size: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
 }
 
 /* Scrollbar Styling */

@@ -19,6 +19,7 @@ const EmployeeCard = ({ employee, onDelete }) => {
   const role = user.role || 'EMPLOYEE';
   const isActive = user.is_active !== undefined ? user.is_active : true;
   const mustChangePassword = user.must_change_password;
+  const hasLoggedIn = user.last_login !== null && user.last_login !== undefined;
   
   // Check if this is the current user's profile
   const isCurrentUser = currentUser && (user.id === currentUser.id || user.username === currentUser.username);
@@ -62,7 +63,7 @@ const EmployeeCard = ({ employee, onDelete }) => {
             {isActive ? 'Active' : 'Inactive'}
           </span>
         </p>
-        {mustChangePassword && (
+        {mustChangePassword && !hasLoggedIn && (
           <p>
             <span className="status-badge status-warning">
               ⚠️ Awaiting first login
@@ -79,7 +80,7 @@ const EmployeeCard = ({ employee, onDelete }) => {
         <Link to={`/employees/edit/${employee.id || user.id}`} className="btn btn-sm btn-primary">
           Edit
         </Link>
-        {mustChangePassword && role === 'EMPLOYEE' && (
+        {mustChangePassword && !hasLoggedIn && role === 'EMPLOYEE' && (
           <button 
             onClick={handleResendCredentials} 
             className="btn btn-sm btn-secondary"

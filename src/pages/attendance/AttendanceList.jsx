@@ -42,7 +42,9 @@ const AttendanceList = () => {
             <tr>
               <th>Date</th>
               <th>Check In</th>
+              <th>Check In Location</th>
               <th>Check Out</th>
+              <th>Check Out Location</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -50,8 +52,38 @@ const AttendanceList = () => {
             {attendance.map((record) => (
               <tr key={record.id}>
                 <td>{formatDate(record.date)}</td>
-                <td>{record.check_in_time ? new Date(record.check_in_time).toLocaleTimeString() : 'N/A'}</td>
-                <td>{record.check_out_time ? new Date(record.check_out_time).toLocaleTimeString() : 'N/A'}</td>
+                <td>
+                  {record.check_in_time ? (
+                    <div>
+                      <div>{new Date(record.check_in_time).toLocaleTimeString()}</div>
+                    </div>
+                  ) : 'N/A'}
+                </td>
+                <td>
+                  {record.check_in_location ? (
+                    <div className="location-text" title={record.check_in_location}>
+                      📍 {record.check_in_location.length > 50 
+                        ? record.check_in_location.substring(0, 50) + '...' 
+                        : record.check_in_location}
+                    </div>
+                  ) : '-'}
+                </td>
+                <td>
+                  {record.check_out_time ? (
+                    <div>
+                      <div>{new Date(record.check_out_time).toLocaleTimeString()}</div>
+                    </div>
+                  ) : 'N/A'}
+                </td>
+                <td>
+                  {record.check_out_location ? (
+                    <div className="location-text" title={record.check_out_location}>
+                      📍 {record.check_out_location.length > 50 
+                        ? record.check_out_location.substring(0, 50) + '...' 
+                        : record.check_out_location}
+                    </div>
+                  ) : '-'}
+                </td>
                 <td>
                   <span className={`status-badge status-${(record.status || 'present').toLowerCase()}`}>
                     {record.status || 'Present'}
