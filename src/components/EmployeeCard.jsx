@@ -13,9 +13,9 @@ const EmployeeCard = ({ employee, onDelete }) => {
   const fullName = user.first_name || user.last_name 
     ? `${user.first_name || ''} ${user.last_name || ''}`.trim() 
     : user.username || 'Unknown';
-  const employeeId = user.employee_id || employee.id || 'N/A';
-  const email = user.email || 'N/A';
-  const department = user.department || 'N/A';
+  const employeeId = user.employee_id || `EMP${employee.id || user.id || '000'}`;
+  const email = user.email || 'No email provided';
+  const department = user.department || 'Unassigned';
   const role = user.role || 'EMPLOYEE';
   const isActive = user.is_active !== undefined ? user.is_active : true;
   const mustChangePassword = user.must_change_password;

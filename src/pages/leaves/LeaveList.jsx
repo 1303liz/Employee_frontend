@@ -50,7 +50,7 @@ const LeaveList = () => {
           <tbody>
             {leaves.map((leave) => (
               <tr key={leave.id}>
-                <td>{leave.leave_type?.name || leave.leave_type || 'N/A'}</td>
+                <td>{leave.leave_type?.name || leave.leave_type || 'Not Specified'}</td>
                 <td>{formatDate(leave.start_date)}</td>
                 <td>{formatDate(leave.end_date)}</td>
                 <td>{leave.reason}</td>

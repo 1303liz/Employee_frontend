@@ -1,5 +1,5 @@
 export const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return '';
   
   const date = new Date(dateString);
   
@@ -15,7 +15,7 @@ export const formatDate = (dateString) => {
 };
 
 export const formatDateTime = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return '';
   
   const date = new Date(dateString);
   

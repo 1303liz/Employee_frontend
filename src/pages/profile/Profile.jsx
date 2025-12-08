@@ -420,18 +420,18 @@ const Profile = () => {
               <div className="read-only-info mb-3">
                 <div className="row">
                   <div className="col-md-4">
-                    <strong>Employee ID:</strong> {profile.employee_id || 'N/A'}
+                    <strong>Employee ID:</strong> {profile.employee_id || `EMP${profile.id || '000'}`}
                   </div>
                   <div className="col-md-4">
                     <strong>Role:</strong> {profile.role}
                   </div>
                   <div className="col-md-4">
-                    <strong>Department:</strong> {profile.department || 'N/A'}
+                    <strong>Department:</strong> {profile.department || 'Unassigned'}
                   </div>
                 </div>
                 <div className="row mt-2">
                   <div className="col-md-4">
-                    <strong>Hire Date:</strong> {profile.hire_date || 'N/A'}
+                    <strong>Hire Date:</strong> {profile.hire_date || 'Not set'}
                   </div>
                   <div className="col-md-4">
                     <strong>Status:</strong> {profile.is_active ? 'Active' : 'Inactive'}

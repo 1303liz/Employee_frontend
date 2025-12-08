@@ -94,7 +94,10 @@ const Dashboard = () => {
           </div>
           <div className="top-bar-info">
             <h2>Welcome back, {user?.first_name || user?.username}!</h2>
-            <p>{profile?.role === 'HR' ? '🎯 HR Manager' : '👤 Employee'} • {profile?.department || 'N/A'}</p>
+            <p>
+              {profile?.role === 'HR' ? '🎯 HR Manager' : '👤 Employee'}
+              {profile?.department && ` • ${profile.department}`}
+            </p>
           </div>
         </div>
         <div className="top-bar-right">
@@ -285,24 +288,24 @@ const Dashboard = () => {
           <div className="card-body">
             <div className="info-row">
               <span className="info-label">Employee ID</span>
-              <span className="info-value">{profile?.employee_id || 'N/A'}</span>
+              <span className="info-value">{profile?.employee_id || `EMP${profile?.id || '000'}`}</span>
             </div>
             <div className="info-row">
               <span className="info-label">Email</span>
-              <span className="info-value">{profile?.email || 'N/A'}</span>
+              <span className="info-value">{profile?.email || 'Not provided'}</span>
             </div>
             <div className="info-row">
               <span className="info-label">Phone</span>
-              <span className="info-value">{profile?.phone_number || 'N/A'}</span>
+              <span className="info-value">{profile?.phone_number || 'Not provided'}</span>
             </div>
             <div className="info-row">
               <span className="info-label">Department</span>
-              <span className="info-value">{profile?.department || 'N/A'}</span>
+              <span className="info-value">{profile?.department || 'Unassigned'}</span>
             </div>
             <div className="info-row">
               <span className="info-label">Hire Date</span>
               <span className="info-value">
-                {profile?.hire_date ? new Date(profile.hire_date).toLocaleDateString() : 'N/A'}
+                {profile?.hire_date ? new Date(profile.hire_date).toLocaleDateString() : 'Not set'}
               </span>
             </div>
             <div className="info-row">

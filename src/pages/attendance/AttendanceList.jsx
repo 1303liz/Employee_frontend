@@ -57,7 +57,7 @@ const AttendanceList = () => {
                     <div>
                       <div>{new Date(record.check_in_time).toLocaleTimeString()}</div>
                     </div>
-                  ) : 'N/A'}
+                  ) : '-'}
                 </td>
                 <td>
                   {record.check_in_location ? (
@@ -73,7 +73,7 @@ const AttendanceList = () => {
                     <div>
                       <div>{new Date(record.check_out_time).toLocaleTimeString()}</div>
                     </div>
-                  ) : 'N/A'}
+                  ) : '-'}
                 </td>
                 <td>
                   {record.check_out_location ? (
