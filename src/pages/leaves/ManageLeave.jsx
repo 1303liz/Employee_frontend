@@ -65,11 +65,9 @@ const ManageLeave = () => {
               leaves.map((leave) => (
                 <tr key={leave.id}>
                   <td>
-                    {leave.employee?.first_name && leave.employee?.last_name
-                      ? `${leave.employee.first_name} ${leave.employee.last_name}`
-                      : leave.employee?.username || 'Unknown Employee'}
+                    {leave.employee_name || leave.employee_username || leave.employee_email || 'Unknown Employee'}
                   </td>
-                  <td>{leave.leave_type?.name || leave.leave_type || 'Not Specified'}</td>
+                  <td>{leave.leave_type_name || 'Leave type not set'}</td>
                   <td>{formatDate(leave.start_date)}</td>
                   <td>{formatDate(leave.end_date)}</td>
                   <td>{leave.reason || 'No reason provided'}</td>

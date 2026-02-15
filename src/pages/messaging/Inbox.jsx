@@ -150,6 +150,12 @@ const Inbox = () => {
   };
 
   const handleMessageClick = async (message) => {
+    // Prevent duplicate calls while loading
+    if (loadingThread && selectedMessage?.id === message.id) {
+      console.log('Already loading this message, ignoring duplicate click');
+      return;
+    }
+    
     console.log('Selected message:', message);
     console.log('Message body:', message.body);
     setSelectedMessage(message);

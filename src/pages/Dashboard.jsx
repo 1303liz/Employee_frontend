@@ -18,12 +18,14 @@ const Dashboard = () => {
   });
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [recentMessages, setRecentMessages] = useState([]);
+  const [recentAnnouncements, setRecentAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
     fetchProfile();
     fetchMessages();
+    fetchAnnouncements();
   }, []);
 
   const fetchProfile = async () => {
@@ -46,6 +48,16 @@ const Dashboard = () => {
       setRecentMessages(messages.slice(0, 5)); // Get first 5 messages
     } catch (err) {
       console.error('Failed to fetch messages', err);
+    }
+  };
+
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await messagingService.getActiveAnnouncements();
+      const announcements = Array.isArray(response) ? response : (response.results || []);
+      setRecentAnnouncements(announcements.slice(0, 3)); // Get first 3 announcements
+    } catch (err) {
+      console.error('Failed to fetch announcements', err);
     }
   };
 
@@ -173,6 +185,14 @@ const Dashboard = () => {
               </div>
               <div className="action-arrow">→</div>
             </Link>
+            <Link to="/messaging/announcements" className="action-item action-yellow">
+              <div className="action-icon">📢</div>
+              <div className="action-content">
+                <h4>View Announcements</h4>
+                <p>Stay updated with news</p>
+              </div>
+              <div className="action-arrow">→</div>
+            </Link>
             {user?.role === 'HR' && (
               <>
                 <Link to="/employees/add" className="action-item action-purple">
@@ -188,6 +208,14 @@ const Dashboard = () => {
                   <div className="action-content">
                     <h4>Manage Leaves</h4>
                     <p>Approve or reject requests</p>
+                  </div>
+                  <div className="action-arrow">→</div>
+                </Link>
+                <Link to="/messaging/announcements/manage" className="action-item action-red">
+                  <div className="action-icon">📣</div>
+                  <div className="action-content">
+                    <h4>Manage Announcements</h4>
+                    <p>Create & edit announcements</p>
                   </div>
                   <div className="action-arrow">→</div>
                 </Link>
@@ -274,6 +302,143 @@ const Dashboard = () => {
                 <Link to="/messaging/compose" className="btn btn-primary" style={{ marginTop: '12px' }}>
                   Send a Message
                 </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Announcements Card */}
+        <div className="dashboard-card announcements-panel">
+          <div className="card-header">
+            <h3>📢 Latest Announcements</h3>
+            <Link to="/messaging/announcements" className="edit-link">
+              View All →
+            </Link>
+          </div>
+          <div className="card-body">
+            {recentAnnouncements.length > 0 ? (
+              <>
+                {recentAnnouncements.map((announcement) => {
+                  const getPriorityColor = (priority) => {
+                    switch (priority?.toLowerCase()) {
+                      case 'urgent': return '#FF6B6B';
+                      case 'high': return '#FFA94D';
+                      case 'normal': return '#4DABF7';
+                      case 'low': return '#A3BE8C';
+                      default: return '#4DABF7';
+                    }
+                  };
+                  
+                  const getPriorityIcon = (priority) => {
+                    switch (priority?.toLowerCase()) {
+                      case 'urgent': return '⚠️';
+                      case 'high': return '📢';
+                      case 'normal': return 'ℹ️';
+                      case 'low': return '📌';
+                      default: return 'ℹ️';
+                    }
+                  };
+
+                  return (
+                    <div 
+                      key={announcement.id}
+                      className="announcement-item"
+                      style={{
+                        padding: '14px',
+                        marginBottom: '10px',
+                        borderRadius: '10px',
+                        backgroundColor: '#fff',
+                        border: `2px solid ${getPriorityColor(announcement.priority)}`,
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                        transition: 'all 0.2s ease',
+                        cursor: 'pointer'
+                      }}
+                      onClick={() => window.location.href = '/messaging/announcements'}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'start', gap: '12px' }}>
+                        <div style={{ 
+                          fontSize: '24px',
+                          marginTop: '2px'
+                        }}>
+                          {getPriorityIcon(announcement.priority)}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ 
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'start',
+                            marginBottom: '6px'
+                          }}>
+                            <h4 style={{ 
+                              margin: 0,
+                              fontSize: '15px',
+                              fontWeight: '600',
+                              color: '#333'
+                            }}>
+                              {announcement.title}
+                            </h4>
+                            <span style={{
+                              fontSize: '10px',
+                              fontWeight: '600',
+                              textTransform: 'uppercase',
+                              padding: '3px 8px',
+                              borderRadius: '12px',
+                              backgroundColor: getPriorityColor(announcement.priority),
+                              color: 'white',
+                              whiteSpace: 'nowrap',
+                              marginLeft: '8px'
+                            }}>
+                              {announcement.priority}
+                            </span>
+                          </div>
+                          <p style={{ 
+                            margin: '0 0 8px 0',
+                            fontSize: '13px',
+                            color: '#666',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical'
+                          }}>
+                            {announcement.content}
+                          </p>
+                          <div style={{ 
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            fontSize: '11px',
+                            color: '#999'
+                          }}>
+                            <span>
+                              By {announcement.sender_details?.full_name || announcement.sender_details?.username || 'HR'}
+                            </span>
+                            <span>
+                              {new Date(announcement.created_at).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
+            ) : (
+              <div style={{ 
+                textAlign: 'center', 
+                padding: '40px 20px',
+                color: '#999'
+              }}>
+                <div style={{ fontSize: '40px', marginBottom: '12px' }}>📢</div>
+                <p>No announcements yet</p>
+                {user?.role === 'HR' && (
+                  <Link to="/messaging/announcements/manage" className="btn btn-primary" style={{ marginTop: '12px' }}>
+                    Create Announcement
+                  </Link>
+                )}
               </div>
             )}
           </div>

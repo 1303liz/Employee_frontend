@@ -7,12 +7,17 @@ const Sidebar = () => {
   const { user } = useAuth();
   const isHR = user?.role === 'HR';
   const [unreadCount, setUnreadCount] = useState(0);
+  const [newAnnouncementsCount, setNewAnnouncementsCount] = useState(0);
 
   useEffect(() => {
     if (user) {
       fetchUnreadCount();
-      // Poll for new messages every 30 seconds
-      const interval = setInterval(fetchUnreadCount, 30000);
+      fetchNewAnnouncementsCount();
+      // Poll for new messages and announcements every 30 seconds
+      const interval = setInterval(() => {
+        fetchUnreadCount();
+        fetchNewAnnouncementsCount();
+      }, 30000);
       
       // Listen for message read events to update count immediately
       const handleMessageRead = () => {
@@ -33,6 +38,26 @@ const Sidebar = () => {
       setUnreadCount(data.count || 0);
     } catch (err) {
       console.error('Failed to fetch unread count:', err);
+    }
+  };
+
+  const fetchNewAnnouncementsCount = async () => {
+    try {
+      const response = await messagingService.getActiveAnnouncements();
+      const announcements = Array.isArray(response) ? response : (response.results || []);
+      
+      // Count announcements from the last 7 days as "new"
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const newCount = announcements.filter(a => {
+        const createdDate = new Date(a.created_at);
+        return createdDate >= sevenDaysAgo;
+      }).length;
+      
+      setNewAnnouncementsCount(newCount);
+    } catch (err) {
+      console.error('Failed to fetch announcements count:', err);
     }
   };
 
@@ -92,8 +117,28 @@ const Sidebar = () => {
               )}
             </Link>
           </li>
-          <li>
-            <Link to="/messaging/announcements" onClick={handleLinkClick}>📢 Announcements</Link>
+          <li style={{ position: 'relative' }}>
+            <Link to="/messaging/announcements" onClick={handleLinkClick}>
+              📢 Announcements
+              {newAnnouncementsCount > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  right: '20px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  backgroundColor: '#FFA94D',
+                  color: 'white',
+                  borderRadius: '10px',
+                  padding: '2px 8px',
+                  fontSize: '11px',
+                  fontWeight: 'bold',
+                  minWidth: '20px',
+                  textAlign: 'center'
+                }}>
+                  {newAnnouncementsCount > 99 ? '99+' : newAnnouncementsCount}
+                </span>
+              )}
+            </Link>
           </li>
           {isHR && (
             <>

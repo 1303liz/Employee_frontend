@@ -66,11 +66,15 @@ const ManageAnnouncements = () => {
       setSubmitting(true);
       setError('');
       
+      console.log('Submitting announcement:', formData);
+      
       if (editingId) {
-        await messagingService.updateAnnouncement(editingId, formData);
+        const response = await messagingService.updateAnnouncement(editingId, formData);
+        console.log('Update response:', response);
         setSuccess('Announcement updated successfully!');
       } else {
-        await messagingService.createAnnouncement(formData);
+        const response = await messagingService.createAnnouncement(formData);
+        console.log('Create response:', response);
         setSuccess('Announcement created successfully!');
       }
       
@@ -82,7 +86,30 @@ const ManageAnnouncements = () => {
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       console.error('Failed to save announcement:', err);
-      setError(err.response?.data?.detail || 'Failed to save announcement');
+      console.error('Error response:', err.response);
+      console.error('Error data:', err.response?.data);
+      
+      // Better error message handling
+      let errorMessage = 'Failed to save announcement';
+      if (err.response?.data) {
+        if (err.response.data.detail) {
+          errorMessage = err.response.data.detail;
+        } else if (err.response.data.error) {
+          errorMessage = err.response.data.error;
+        } else if (typeof err.response.data === 'string') {
+          errorMessage = err.response.data;
+        } else {
+          // Handle field-specific errors
+          const errors = Object.entries(err.response.data)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+            .join('; ');
+          if (errors) errorMessage = errors;
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
