@@ -66,21 +66,33 @@ api.interceptors.response.use(
       
       if (!refreshToken) {
         // No refresh token available, logout user
+        console.log('No refresh token available, redirecting to login');
+        isRefreshing = false;
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
+        // Clear queued requests
+        processQueue(error, null);
         window.location.href = '/login';
         return Promise.reject(error);
       }
 
       try {
         // Attempt to refresh the token
+        console.log('Attempting token refresh...');
         const response = await axios.post(`${API_URL}/refresh/`, {
           refresh: refreshToken,
         });
 
         const newAccessToken = response.data.access;
+        const newRefreshToken = response.data.refresh; // In case backend rotates refresh tokens
+        
         localStorage.setItem('access_token', newAccessToken);
+        if (newRefreshToken) {
+          localStorage.setItem('refresh_token', newRefreshToken);
+        }
+        
+        console.log('Token refresh successful');
         
         // Update default header
         api.defaults.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -90,17 +102,23 @@ api.interceptors.response.use(
         
         // Retry original request
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        isRefreshing = false;
         return api(originalRequest);
       } catch (refreshError) {
         // Refresh failed, logout user
+        console.error('Token refresh failed:', refreshError.response?.status, refreshError.response?.data);
+        isRefreshing = false;
         processQueue(refreshError, null);
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        
+        // Only redirect if not already on login page
+        if (window.location.pathname !== '/login') {
+          console.log('Redirecting to login due to invalid tokens');
+          window.location.href = '/login';
+        }
         return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
       }
     }
 
