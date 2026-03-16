@@ -30,8 +30,20 @@ const ManageLeave = () => {
   };
 
   const handleStatusUpdate = async (leaveId, status) => {
+    let comments = '';
+
+    if (status === 'REJECTED') {
+      comments = window.prompt('Enter rejection reason (required):', '') || '';
+      if (!comments.trim()) {
+        setError('Rejection reason is required.');
+        return;
+      }
+    } else {
+      comments = window.prompt('Optional approval comment:', '') || '';
+    }
+
     try {
-      await leaveService.updateLeaveStatus(leaveId, status);
+      await leaveService.updateLeaveStatus(leaveId, status, comments.trim());
       setError('');
       fetchAllLeaves(); // Refresh the list
     } catch (err) {

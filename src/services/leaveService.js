@@ -55,7 +55,7 @@ const leaveService = {
   updateLeaveStatus: async (id, status, comments = '') => {
     const response = await api.post(`/leave-management/applications/${id}/approve/`, {
       status,
-      comments,
+      approval_comments: comments,
     });
     return response.data;
   },

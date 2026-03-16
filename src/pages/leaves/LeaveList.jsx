@@ -45,18 +45,24 @@ const LeaveList = () => {
               <th>End Date</th>
               <th>Reason</th>
               <th>Status</th>
+              <th>Rejection Reason</th>
             </tr>
           </thead>
           <tbody>
             {leaves.map((leave) => (
               <tr key={leave.id}>
-                <td>{leave.leave_type?.name || leave.leave_type || 'Not Specified'}</td>
+                <td>{leave.leave_type_name || leave.leave_type?.name || leave.leave_type || 'Not Specified'}</td>
                 <td>{formatDate(leave.start_date)}</td>
                 <td>{formatDate(leave.end_date)}</td>
                 <td>{leave.reason}</td>
                 <td>
                   <span className={`status-badge status-${leave.status.toLowerCase()}`}>
                     {leave.status}
+                  </span>
+                </td>
+                <td>
+                  <span className={`rejection-reason reason-${leave.status.toLowerCase()}`}>
+                    {leave.status === 'REJECTED' ? (leave.approval_comments || 'No reason provided') : '-'}
                   </span>
                 </td>
               </tr>

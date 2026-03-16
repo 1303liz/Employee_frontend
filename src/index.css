@@ -1727,6 +1727,27 @@ html {
   color: var(--primary-color);
 }
 
+.rejection-reason {
+  display: inline-block;
+  max-width: 320px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.reason-rejected {
+  color: var(--danger-color);
+}
+
+.reason-approved,
+.reason-pending,
+.reason-cancelled {
+  color: var(--gray-text);
+}
+
 /* Location Text */
 .location-text {
   font-size: 0.85rem;
