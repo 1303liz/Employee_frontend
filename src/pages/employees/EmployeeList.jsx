@@ -18,7 +18,7 @@ const EmployeeList = () => {
       fetchEmployees();
     } else {
       setLoading(false);
-      setError('Only HR personnel can view the employee list');
+      setError('');
     }
   }, [user]);
 
@@ -68,6 +68,63 @@ const EmployeeList = () => {
 
   if (loading) return <Loader />;
 
+  if (user?.role !== 'HR') {
+    const employeeSections = [
+      {
+        title: 'Training Applications',
+        description: 'View training programs posted by HR, apply, and track your enrollment progress.',
+        link: '/employees/training',
+        action: 'Open Training Portal',
+        accent: '#1d4ed8',
+      },
+      {
+        title: 'Peer Reviews',
+        description: 'Review and evaluate colleagues, then check the feedback you have received.',
+        link: '/employees/peer-reviews',
+        action: 'Open Peer Reviews',
+        accent: '#0f766e',
+      },
+      {
+        title: 'Performance Reports',
+        description: 'Review performance reports provided by HR and download or print a copy when needed.',
+        link: '/employees/performance-report',
+        action: 'Open Performance Report',
+        accent: '#b45309',
+      },
+    ];
+
+    return (
+      <div className="employee-list-container">
+        <div className="page-header">
+          <h1>Employee Section</h1>
+        </div>
+
+        <div className="employee-card" style={{ marginBottom: '1.5rem' }}>
+          <h3 style={{ marginBottom: '0.75rem' }}>Development and Performance</h3>
+          <p style={{ margin: 0, color: '#555' }}>
+            Use this section to apply for HR-posted trainings, complete peer evaluations, and review your performance reports.
+          </p>
+        </div>
+
+        <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))' }}>
+          {employeeSections.map((section) => (
+            <div
+              key={section.title}
+              className="employee-card"
+              style={{ borderTop: `4px solid ${section.accent}` }}
+            >
+              <h3 style={{ marginBottom: '0.75rem' }}>{section.title}</h3>
+              <p style={{ color: '#555', minHeight: 72 }}>{section.description}</p>
+              <Link to={section.link} className="btn btn-primary">
+                {section.action}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="employee-list-container">
       <div className="page-header">
@@ -81,15 +138,6 @@ const EmployeeList = () => {
 
       {error && <div className="alert alert-danger">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
-      
-      {user?.role !== 'HR' && !loading && (
-        <div className="empty-state">
-          <div className="empty-state-icon">🔒</div>
-          <h3>Access Restricted</h3>
-          <p>Only HR personnel can view and manage the employee list.</p>
-        </div>
-      )}
-
       {user?.role === 'HR' && (
         <>
           <div className="search-bar">

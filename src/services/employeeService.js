@@ -49,6 +49,12 @@ const employeeService = {
     return response.data;
   },
 
+  // Get colleague directory for employee self-service features
+  getColleagues: async () => {
+    const response = await api.get('/employee-management/colleagues/');
+    return response.data;
+  },
+
   // Update my profile
   updateMyProfile: async (profileData) => {
     const response = await api.put('/employee-management/my-profile/', profileData);

@@ -14,6 +14,9 @@ import Dashboard from '../pages/Dashboard';
 import EmployeeList from '../pages/employees/EmployeeList';
 import AddEmployee from '../pages/employees/AddEmployee';
 import EditEmployee from '../pages/employees/EditEmployee';
+import TrainingPortal from '../pages/training/TrainingPortal';
+import PeerReview from '../pages/training/PeerReview';
+import MyPerformanceReport from '../pages/performance/MyPerformanceReport';
 
 // Leave pages
 import LeaveList from '../pages/leaves/LeaveList';
@@ -34,6 +37,11 @@ import MessageView from '../pages/messaging/MessageView';
 import SentMessages from '../pages/messaging/SentMessages';
 import ManageAnnouncements from '../pages/messaging/ManageAnnouncements';
 import Announcements from '../pages/messaging/Announcements';
+
+// HR management pages
+import RecruitmentManagement from '../pages/hr/RecruitmentManagement';
+import TrainingDevelopment from '../pages/hr/TrainingDevelopment';
+import PerformanceManagement from '../pages/hr/PerformanceManagement';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -112,6 +120,30 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute requiredRole="HR">
             <EditEmployee />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees/training"
+        element={
+          <ProtectedRoute>
+            <TrainingPortal />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees/peer-reviews"
+        element={
+          <ProtectedRoute>
+            <PeerReview />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/employees/performance-report"
+        element={
+          <ProtectedRoute>
+            <MyPerformanceReport />
           </ProtectedRoute>
         }
       />
@@ -216,6 +248,32 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Announcements />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* HR Management routes */}
+      <Route
+        path="/hr/recruitment"
+        element={
+          <ProtectedRoute requiredRole="HR">
+            <RecruitmentManagement />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/hr/training"
+        element={
+          <ProtectedRoute requiredRole="HR">
+            <TrainingDevelopment />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/hr/performance"
+        element={
+          <ProtectedRoute requiredRole="HR">
+            <PerformanceManagement />
           </ProtectedRoute>
         }
       />

@@ -86,8 +86,21 @@ const Sidebar = () => {
             <Link to="/profile" onClick={handleLinkClick}>👤 My Profile</Link>
           </li>
           <li>
-            <Link to="/employees" onClick={handleLinkClick}>👥 Employees</Link>
+            <Link to="/employees" onClick={handleLinkClick}>👥 {isHR ? 'Employees' : 'Employee Section'}</Link>
           </li>
+          {!isHR && (
+            <>
+              <li>
+                <Link to="/employees/training" onClick={handleLinkClick}>🎓 Training Portal</Link>
+              </li>
+              <li>
+                <Link to="/employees/peer-reviews" onClick={handleLinkClick}>🤝 Peer Reviews</Link>
+              </li>
+              <li>
+                <Link to="/employees/performance-report" onClick={handleLinkClick}>📄 Performance Report</Link>
+              </li>
+            </>
+          )}
           <li>
             <Link to="/leaves" onClick={handleLinkClick}>🏖️ {isHR ? 'All Leaves' : 'My Leaves'}</Link>
           </li>
@@ -155,6 +168,15 @@ const Sidebar = () => {
               </li>
               <li>
                 <Link to="/messaging/announcements/manage" onClick={handleLinkClick}>📢 Manage Announcements</Link>
+              </li>
+              <li>
+                <Link to="/hr/recruitment" onClick={handleLinkClick}>🧾 Recruitment</Link>
+              </li>
+              <li>
+                <Link to="/hr/training" onClick={handleLinkClick}>🎓 Training & Development</Link>
+              </li>
+              <li>
+                <Link to="/hr/performance" onClick={handleLinkClick}>📈 Performance (360)</Link>
               </li>
             </>
           )}

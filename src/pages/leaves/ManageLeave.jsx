@@ -8,6 +8,21 @@ const ManageLeave = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const leaveStats = leaves.reduce(
+    (acc, leave) => {
+      const status = String(leave.status || '').toUpperCase();
+      if (status === 'PENDING') acc.pending += 1;
+      if (status === 'APPROVED') acc.approved += 1;
+      if (status === 'REJECTED') acc.rejected += 1;
+      return acc;
+    },
+    {
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+    }
+  );
+
   useEffect(() => {
     fetchAllLeaves();
   }, []);
@@ -55,73 +70,101 @@ const ManageLeave = () => {
   if (loading) return <Loader />;
 
   return (
-    <div className="manage-leave-container">
-      <h1>Manage Leaves (HR)</h1>
+    <div className="manage-leave-container leave-list-page">
+      <div className="page-header leave-list-header">
+        <div>
+          <h1>Manage Leaves (HR)</h1>
+          <p className="leave-list-subtitle">Review requests, update decisions, and keep leave workflows moving.</p>
+        </div>
+      </div>
+
+      <div className="leave-list-summary" role="region" aria-label="Leave request summary">
+        <div className="leave-summary-item">
+          <span className="leave-summary-label">Total Requests</span>
+          <span className="leave-summary-value">{leaves.length}</span>
+        </div>
+        <div className="leave-summary-item">
+          <span className="leave-summary-label">Pending</span>
+          <span className="leave-summary-value">{leaveStats.pending}</span>
+        </div>
+        <div className="leave-summary-item">
+          <span className="leave-summary-label">Approved</span>
+          <span className="leave-summary-value">{leaveStats.approved}</span>
+        </div>
+        <div className="leave-summary-item">
+          <span className="leave-summary-label">Rejected</span>
+          <span className="leave-summary-value">{leaveStats.rejected}</span>
+        </div>
+      </div>
+
       {error && <div className="error-message">{error}</div>}
 
-      <div className="table-container">
-        <table className="leave-table">
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th>Leave Type</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Reason</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaves.length > 0 ? (
-              leaves.map((leave) => (
-                <tr key={leave.id}>
-                  <td>
-                    {leave.employee_name || leave.employee_username || leave.employee_email || 'Unknown Employee'}
-                  </td>
-                  <td>{leave.leave_type_name || 'Leave type not set'}</td>
-                  <td>{formatDate(leave.start_date)}</td>
-                  <td>{formatDate(leave.end_date)}</td>
-                  <td>{leave.reason || 'No reason provided'}</td>
-                  <td>
-                    <span className={`status-badge status-${leave.status.toLowerCase()}`}>
-                      {leave.status}
+      <div className="leave-records-grid">
+        {leaves.length > 0 ? (
+          leaves.map((leave) => {
+            const statusLower = String(leave.status || '').toLowerCase();
+
+            return (
+              <article key={leave.id} className="leave-record-card">
+                <header className="leave-record-header">
+                  <div>
+                    <h3 className="leave-record-title">{leave.leave_type_name || 'Leave type not set'}</h3>
+                    <p className="leave-record-person">
+                      {leave.employee_name || leave.employee_username || leave.employee_email || 'Unknown Employee'}
+                    </p>
+                  </div>
+                  <span className={`status-badge status-${statusLower}`}>{leave.status}</span>
+                </header>
+
+                <div className="leave-record-meta">
+                  <div className="leave-meta-item">
+                    <span className="leave-meta-label">Start Date</span>
+                    <span className="leave-meta-value">{formatDate(leave.start_date)}</span>
+                  </div>
+                  <div className="leave-meta-item">
+                    <span className="leave-meta-label">End Date</span>
+                    <span className="leave-meta-value">{formatDate(leave.end_date)}</span>
+                  </div>
+                </div>
+
+                <div className="leave-detail-block">
+                  <h4>Reason</h4>
+                  <p className={leave.reason ? '' : 'leave-placeholder-text'}>{leave.reason || 'No reason provided'}</p>
+                </div>
+
+                <div className="leave-detail-block">
+                  <h4>Comments</h4>
+                  <p className={leave.approval_comments ? '' : 'leave-placeholder-text'}>{leave.approval_comments || '-'}</p>
+                </div>
+
+                <footer className="leave-record-actions">
+                  {leave.status === 'PENDING' ? (
+                    <div className="table-actions">
+                      <button
+                        className="btn btn-success btn-sm"
+                        onClick={() => handleStatusUpdate(leave.id, 'APPROVED')}
+                      >
+                        Approve
+                      </button>
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={() => handleStatusUpdate(leave.id, 'REJECTED')}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="leave-action-state">
+                      {leave.status === 'APPROVED' ? 'Approved' : 'Rejected'}
                     </span>
-                  </td>
-                  <td>
-                    {leave.status === 'PENDING' && (
-                      <div className="table-actions">
-                        <button
-                          className="btn btn-success btn-sm"
-                          onClick={() => handleStatusUpdate(leave.id, 'APPROVED')}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleStatusUpdate(leave.id, 'REJECTED')}
-                        >
-                          Reject
-                        </button>
-                      </div>
-                    )}
-                    {leave.status !== 'PENDING' && (
-                      <span style={{ color: 'var(--gray-text)', fontSize: '0.875rem' }}>
-                        {leave.status === 'APPROVED' ? 'Approved' : 'Rejected'}
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="7" style={{ textAlign: 'center', padding: '2rem', color: 'var(--gray-text)' }}>
-                  No leave requests found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+                  )}
+                </footer>
+              </article>
+            );
+          })
+        ) : (
+          <div className="leave-empty-state">No leave requests found.</div>
+        )}
       </div>
     </div>
   );
